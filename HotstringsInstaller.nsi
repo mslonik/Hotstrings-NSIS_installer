@@ -1,12 +1,36 @@
-!include "FileFunc.nsh"
+!include "FileFunc.nsh"				;for function GetTime
 !include "LogicLib.nsh"
+!include "MUI2.nsh"					;for graphical installer
 
 ; Script Header
-Outfile "HotstringsInstaller.exe"
-RequestExecutionLevel user ; Install only for the current user
+Outfile "HotstringsInstaller.exe"		;Name of the installer file
+RequestExecutionLevel user 			; Install only for the current user
 
 !define APP_NAME "Hotstrings"
+!define APP_VERSION "1.0"
 !define SILENT_PARAMETER "/s"
+
+!macro LogMessage Message
+    ${GetTime} "" "L" $1 $2 $3 $4 $5 $6 $7
+	; $1="01"      day
+	; $2="04"      month
+	; $3="2005"    year
+	; $4="Friday"  day of week name
+	; $5="16"      hour
+	; $6="05"      minute
+	; $7="50"      seconds
+    FileWrite $0 "$3-$2-$1 $5:$6:$7 "
+    FileWrite $0 "${Message}$\r$\n"
+!macroend
+
+; gui installer
+; !insertmacro MUI_PAGE_WELCOME
+; !insertmacro MUI_PAGE_LICENSE "LICENSE_EULA.md"
+; !insertmacro MUI_PAGE_DIRECTORY
+; !insertmacro MUI_PAGE_INSTFILES
+; !insertmacro MUI_UNPAGE_CONFIRM
+; !insertmacro MUI_UNPAGE_INSTFILES
+; !insertmacro MUI_LANGUAGE "English"
 
 ; Silent installation section
 Function SilentInstall
@@ -15,8 +39,11 @@ Function SilentInstall
     SetOutPath "$INSTDIR" ; Set the installation directory to the user's Roaming AppData
     ; Copy files to the installation directory
 		File "Hotstrings.exe"
+		!insertmacro LogMessage "  - Created: $INSTDIR\Hotstrings.exe"
 		File "Config.ini"
+		!insertmacro LogMessage "  - Created: $INSTDIR\Config.ini"
 		File "LICENSE_EULA.md"
+		!insertmacro LogMessage "  - Created: $INSTDIR\LICENSE_EULA.md"
 
 	CreateDirectory "$INSTDIR\Libraries"		; Create Libraries folder
 	SetOutPath "$INSTDIR\Libraries" ; Set the installation directory to the user's Roaming AppData
@@ -44,28 +71,28 @@ FunctionEnd
 
 ; Default section
 Section
+	SetShellVarContext current	;If set to 'current' (the default), the current user's shell folders are used. Note that, if used in installer code, this will only affect the installer, and if used in uninstaller code, this will only affect the uninstaller. To affect both, it needs to be used in both.
 	StrCpy $INSTDIR "C:\Users\macie\Documents\temp2\"
-	; StrCpy $INSTDIR "$APPDATA\${APP_NAME}"
+	; StrCpy $INSTDIR "$LOCALAPPDATA\${APP_NAME}"
+
 
 	; Write uninstaller
 	WriteUninstaller "$INSTDIR\HotstringsUninstaller.exe"
-
+	; Log file creation
+	FileOpen $0 "$INSTDIR\HotstringsInstaller.log" a		;"a" = append, meaning opened for both read and write
+    	!insertmacro LogMessage "Hotstrings Installer Version: ${APP_VERSION}"
+    	!insertmacro LogMessage "Installation started."
+    	!insertmacro LogMessage "Files created during installation:"
+	
 	Call SilentInstall
+	FileClose $0
 SectionEnd
 
 ; Uninstaller section
 Section "Uninstall"
-    ; Remove files and directories
-	Delete 	"$INSTDIR\Libraries\*"	;relative path, subfolder: "."
-	Delete 	"$INSTDIR\Hotstrings.exe"
-	Delete 	"$INSTDIR\Config.ini"
-	Delete 	"$INSTDIR\LICENSE_EULA.md"
-	Delete 	"$INSTDIR\Languages\English.txt"
-	Delete	"$INSTDIR\Log\*"
-	RMDir 	"$INSTDIR\Languages"
-	RMDir 	"$INSTDIR\Libraries"
-	RMDir 	"$INSTDIR\Log"
-	RMDir 	"$INSTDIR"
+	SetShellVarContext current	;If set to 'current' (the default), the current user's shell folders are used. Note that, if used in installer code, this will only affect the installer, and if used in uninstaller code, this will only affect the uninstaller. To affect both, it needs to be used in both.
+	SetOutPath "$APPDATA"		;This trick enables deletion of all the files from installation folder.
+	RMDir /r	"$INSTDIR"		;remove directory along with its contents
 
     ; Remove uninstall information from the registry
     DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
