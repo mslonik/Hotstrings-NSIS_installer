@@ -12,46 +12,23 @@ RequestExecutionLevel user ; Install only for the current user
 Function SilentInstall
     
     CreateDirectory "$INSTDIR"				; Create Libraries and Log folders
+    SetOutPath "$INSTDIR" ; Set the installation directory to the user's Roaming AppData
     ; Copy files to the installation directory
 		File "Hotstrings.exe"
 		File "Config.ini"
 		File "LICENSE_EULA.md"
 
 	CreateDirectory "$INSTDIR\Libraries"		; Create Libraries folder
+	SetOutPath "$INSTDIR\Libraries" ; Set the installation directory to the user's Roaming AppData
 	; Copy files to the installation directory
-		File ".\Libraries\AbbreviationsEnglish.csv"	;relative path, subfolder: "."
-		File ".\Libraries\AcademicDegrees.csv"
-		File ".\Libraries\AutocompleteBrackets.csv"
-		File ".\Libraries\BoxDrawing.csv"
-		File ".\Libraries\BrandAndProperNames.csv"
-		File ".\Libraries\CapitalLetters.csv"
-		File ".\Libraries\CircledNumbers.csv"
-		File ".\Libraries\ComputerKeysSymbols.csv"
-		File ".\Libraries\CurrencySymbols.csv"
-		File ".\Libraries\DiacriticsHotstrings.csv"
-		File ".\Libraries\EmojiHotstrings.csv"
-		File ".\Libraries\EnglishInternetSlang.csv"
-		File ".\Libraries\Examples_TestLib.csv"
-		File ".\Libraries\Fileformats.csv"
-		File ".\Libraries\Finance.csv"
-		File ".\Libraries\FirstNameCapitalizer.csv"
-		File ".\Libraries\Forms&Frameworks.csv"
-		File ".\Libraries\GreekAlphabet.csv"
-		File ".\Libraries\HotstringsHotstrings.csv"
-		File ".\Libraries\Incoterms.csv"
-		File ".\Libraries\KeyboardKeys.csv"
-		File ".\Libraries\Markdown.csv"
-		File ".\Libraries\PersonalHotstringsTemplate.csv"
-		File ".\Libraries\PhysicsHotstrings.csv"
-		File ".\Libraries\Punctuation.csv"
-		File ".\Libraries\TechnicalHotstrings.csv"
-		File ".\Libraries\TimeHotstrings.csv"
-		File ".\Libraries\WindowsShortcuts.csv"
+		File ".\Libraries\*.csv"	;relative path, subfolder: "."
 
 	CreateDirectory "$INSTDIR\Log"		; Create Log folder
+	SetOutPath "$INSTDIR\Log" ; Set the installation directory to the user's Roaming AppData
     ; Copy files to the installation directory
 
     CreateDirectory "$INSTDIR\Languages"		; Create Languages folder
+    SetOutPath "$INSTDIR\Languages" ; Set the installation directory to the user's Roaming AppData
         ; Copy files to the installation directory
     File ".\Languages\English.txt"
 
@@ -67,11 +44,11 @@ FunctionEnd
 
 ; Default section
 Section
-	StrCpy $INSTDIR "$APPDATA\${APP_NAME}"
-	SetOutPath "$INSTDIR" ; Set the installation directory to the user's Roaming AppData
+	StrCpy $INSTDIR "C:\Users\macie\Documents\temp2\"
+	; StrCpy $INSTDIR "$APPDATA\${APP_NAME}"
 
 	; Write uninstaller
-	WriteUninstaller "$INSTDIR\uninstaller.exe"
+	WriteUninstaller "$INSTDIR\HotstringsUninstaller.exe"
 
 	Call SilentInstall
 SectionEnd
@@ -79,41 +56,15 @@ SectionEnd
 ; Uninstaller section
 Section "Uninstall"
     ; Remove files and directories
-	Delete 	"$INSTDIR\AbbreviationsEnglish.csv"	;relative path, subfolder: "."
-	Delete 	"$INSTDIR\AcademicDegrees.csv"
-	Delete 	"$INSTDIR\AutocompleteBrackets.csv"
-	Delete 	"$INSTDIR\BoxDrawing.csv"
-	Delete 	"$INSTDIR\BrandAndProperNames.csv"
-	Delete 	"$INSTDIR\CapitalLetters.csv"
-	Delete 	"$INSTDIR\CircledNumbers.csv"
-	Delete 	"$INSTDIR\ComputerKeysSymbols.csv"
-	Delete 	"$INSTDIR\CurrencySymbols.csv"
-	Delete 	"$INSTDIR\DiacriticsHotstrings.csv"
-	Delete 	"$INSTDIR\EmojiHotstrings.csv"
-	Delete 	"$INSTDIR\EnglishInternetSlang.csv"
-	Delete 	"$INSTDIR\Examples_TestLib.csv"
-	Delete 	"$INSTDIR\Fileformats.csv"
-	Delete 	"$INSTDIR\Finance.csv"
-	Delete 	"$INSTDIR\FirstNameCapitalizer.csv"
-	Delete 	"$INSTDIR\Forms&Frameworks.csv"
-	Delete 	"$INSTDIR\GreekAlphabet.csv"
-	Delete 	"$INSTDIR\HotstringsHotstrings.csv"
-	Delete 	"$INSTDIR\Incoterms.csv"
-	Delete 	"$INSTDIR\KeyboardKeys.csv"
-	Delete 	"$INSTDIR\Markdown.csv"
-	Delete 	"$INSTDIR\PersonalHotstringsTemplate.csv"
-	Delete 	"$INSTDIR\PhysicsHotstrings.csv"
-	Delete 	"$INSTDIR\Punctuation.csv"
-	Delete 	"$INSTDIR\TechnicalHotstrings.csv"
-	Delete 	"$INSTDIR\TimeHotstrings.csv"
-	Delete 	"$INSTDIR\WindowsShortcuts.csv"
-
+	Delete 	"$INSTDIR\Libraries\*"	;relative path, subfolder: "."
 	Delete 	"$INSTDIR\Hotstrings.exe"
 	Delete 	"$INSTDIR\Config.ini"
 	Delete 	"$INSTDIR\LICENSE_EULA.md"
 	Delete 	"$INSTDIR\Languages\English.txt"
+	Delete	"$INSTDIR\Log\*"
 	RMDir 	"$INSTDIR\Languages"
 	RMDir 	"$INSTDIR\Libraries"
+	RMDir 	"$INSTDIR\Log"
 	RMDir 	"$INSTDIR"
 
     ; Remove uninstall information from the registry
