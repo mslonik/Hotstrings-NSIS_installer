@@ -101,8 +101,8 @@ Section
 
 	;Create shortcuts
 	CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\${APP_NAME}.exe"				; Create a shortcut on the desktop
-	CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\${APP_NAME}.exe"	; Create a shortcut in Start Menu Programs
-	CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME} webpage.lnk" "$INSTDIR\${APP_NAME}Webpage.url"
+	CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\${APP_NAME}.exe" "" "$INSTDIR\${APP_NAME}.exe" 0 SW_SHOWNORMAL "" "Text replacement tool" 	; Create a shortcut in Start Menu Programs
+	CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME} webpage.lnk" "$INSTDIR\${APP_NAME}Webpage.url" "" "$INSTDIR\${APP_NAME}.exe" 0 SW_SHOWNORMAL "" "${APP_NAME} webpage"; Create a shortcut in Start Menu Programs
 	
 	FileClose $0				;Close log file
 SectionEnd
