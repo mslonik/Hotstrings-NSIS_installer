@@ -2,10 +2,13 @@
 !include "LogicLib.nsh"				;The LogicLib provides some very simple macros that allow easy construction of complex logical structures. 
 ; !include "MUI2.nsh"				;for graphical installer
 
-
-!define APP_NAME "Hotstrings"
-!define APP_VERSION "1.0"
-!define SILENT_PARAMETER "/s"
+!define APP_NAME 		"Hotstrings"
+!define APP_VERSION 	"1.0"
+!define COMPANY_NAME 	"Damian Damaszke Dam IT"			;for VIAddVersionKey
+!define COPYRIGHT 		"Maciej Slojewski & DamIT"		;for VIAddVersionKey
+!define DESCRIPTION 	"Installer of Hotstrings application: advanced text replacement tool."	;for VIAddVersionKey
+!define VERSION 		"3.6.19.0"													;for Registry input
+!define WEB_SITE 		"https://hotstrings.technology"									;for Registry input
 
 ; Script Header
 SetCompressor /SOLID Lzma					;LZMA is a new compression method that gives very good compression ratios. If /SOLID is used, all of the installer data is compressed in one block. This results in greater compression ratios.
@@ -15,8 +18,16 @@ CRCCheck 	on								;Specifies whether or not the installer will perform a CRC o
 Name		"${APP_NAME}"						;Sets the name displayed in installer GUI.
 Outfile 	"${APP_NAME}Installer.exe"			;Name of the .exe  installer file
 RequestExecutionLevel 	user					; Install only for the current user
-; SetShellVarContext		current			;Sets the context of $SMPROGRAMS (Start Menu Programs) and other shell folders.
 SilentInstall			normal				;if this is set to 'normal' and the user runs the installer with /S (case sensitive) on the command line, it will behave as if SilentInstall 'silent' was used.
+
+;These can be viewed in the File Properties Version or Details tab.
+VIProductVersion "${VERSION}"
+VIAddVersionKey "ProductName"  	"${APP_NAME}"		;
+VIAddVersionKey "CompanyName"  	"${COMPANY_NAME}"
+VIAddVersionKey "LegalCopyright"  	"${COPYRIGHT}"
+VIAddVersionKey "FileDescription"  "${DESCRIPTION}"
+VIAddVersionKey "FileVersion"  	"${VERSION}"
+VIAddVersionKey "ProductVersion"  	"${VERSION}"
 
 !macro LogMessage Message
     ${GetTime} "" "L" $1 $2 $3 $4 $5 $6 $7
@@ -40,95 +51,74 @@ SilentInstall			normal				;if this is set to 'normal' and the user runs the inst
 ; !insertmacro MUI_UNPAGE_INSTFILES
 ; !insertmacro MUI_LANGUAGE "English"
 
-; Silent installation section
-Function SilentInstall
-    CreateDirectory "$INSTDIR"				; Create Libraries and Log folders
-    SetOutPath "$INSTDIR" ; Set the installation directory to the user's Roaming AppData
-    		; Copy files to the installation directory
-		File "Hotstrings.exe"
-		!insertmacro LogMessage "  - Created: $INSTDIR\Hotstrings.exe"
-		File "Config.ini"
-		!insertmacro LogMessage "  - Created: $INSTDIR\Config.ini"
-		File "LICENSE_EULA.md"
-		!insertmacro LogMessage "  - Created: $INSTDIR\LICENSE_EULA.md"
-
-	CreateDirectory "$INSTDIR\Libraries"		; Create Libraries folder
-	SetOutPath "$INSTDIR\Libraries" ; Set the installation directory to the user's Roaming AppData
-		; Copy files to the installation directory
-		File ".\Libraries\*.csv"	;relative path, subfolder: "."
-
-	CreateDirectory "$INSTDIR\Log"		; Create Log folder
-	SetOutPath "$INSTDIR\Log" ; Set the installation directory to the user's Roaming AppData
-    		; Copy files to the installation directory
-
-    CreateDirectory "$INSTDIR\Languages"		; Create Languages folder
-    SetOutPath "$INSTDIR\Languages" ; Set the installation directory to the user's Roaming AppData
-        	; Copy files to the installation directory
-    File ".\Languages\English.txt"
-
-    ; Add uninstall information to the registry
-    WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayName" "${APP_NAME}"
-    WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "UninstallString" "$INSTDIR\uninstaller.exe"
-    WriteRegDWORD 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "NoModify" 1
-    WriteRegDWORD 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "NoRepair" 1
-
-    ; Create a shortcut on the desktop
-    CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$APPDATA\${APP_NAME}\${APP_NAME}.exe"
-FunctionEnd
-
 ; Default section
 Section
 	SetShellVarContext current	;If set to 'current' (the default), the current user's shell folders are used. Note that, if used in installer code, this will only affect the installer, and if used in uninstaller code, this will only affect the uninstaller. To affect both, it needs to be used in both.
-	StrCpy $INSTDIR "C:\Users\macie\Documents\temp2\"
-	; StrCpy $INSTDIR "$LOCALAPPDATA\${APP_NAME}"
-	; LogSet on					;Sets whether install logging to $INSTDIR\install.log will happen. Not available in my version.
+	StrCpy $INSTDIR "$LOCALAPPDATA\${APP_NAME}"	;for testing purposes only: StrCpy $INSTDIR "C:\Users\macie\Documents\temp2\"
+	; LogSet on					;Sets whether install logging to $INSTDIR\install.log will happen. Not available in my version. Future.
 
 	; Write uninstaller
-	WriteUninstaller "$INSTDIR\HotstringsUninstaller.exe"
+	WriteUninstaller "$INSTDIR\${APP_NAME}Uninstaller.exe"
 	; Log file creation
 	FileOpen $0 "$INSTDIR\HotstringsInstaller.log" a		;"a" = append, meaning opened for both read and write
     	!insertmacro LogMessage "Hotstrings Installer Version: ${APP_VERSION}"
     	!insertmacro LogMessage "Installation started."
     	!insertmacro LogMessage "Files created during installation:"
 	
-	Call SilentInstall
-	FileClose $0
+	CreateDirectory "$INSTDIR"				; Create Libraries and Log folders
+	SetOutPath "$INSTDIR" ; Set the installation directory to the user's LOCALAPPDATA
+			; Copy files to the installation directory
+		File "${APP_NAME}.exe"
+		!insertmacro LogMessage "  - Created: $INSTDIR\${APP_NAME}.exe"
+		File "Config.ini"
+		!insertmacro LogMessage "  - Created: $INSTDIR\Config.ini"
+		File "LICENSE_EULA.md"
+		!insertmacro LogMessage "  - Created: $INSTDIR\LICENSE_EULA.md"
+		File "${APP_NAME}Webpage.url" 
+		!insertmacro LogMessage "  - Created: $INSTDIR\${APP_NAME}Webpage.url"
+	CreateDirectory "$INSTDIR\Libraries"		; Create Libraries folder
+	SetOutPath "$INSTDIR\Libraries" ; Set the installation directory to the user's LOCALAPPDATA
+		; Copy files to the installation directory
+		File ".\Libraries\*.csv"	;relative path, subfolder: "."	
+	CreateDirectory "$INSTDIR\Log"		; Create Log folder
+	SetOutPath "$INSTDIR\Log" ; Set the installation directory to the user's LOCALAPPDATA
+			; Copy files to the installation directory	
+	CreateDirectory "$INSTDIR\Languages"		; Create Languages folder
+	SetOutPath "$INSTDIR\Languages" ; Set the installation directory to the user's LOCALAPPDATA
+	    	; Copy files to the installation directory
+	File ".\Languages\English.txt"	
+	
+	; Add uninstall information to the registry
+	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayName" "${APP_NAME}"
+	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "UninstallString" "$INSTDIR\${APP_NAME}Uninstaller.exe"
+	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayVersion" "${VERSION}"
+	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "Publisher" "${COMPANY_NAME}"
+	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "URLInfoAbout" "${WEB_SITE}"
+	WriteRegDWORD 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "NoModify" 1
+	WriteRegDWORD 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "NoRepair" 1	
+	
+	CreateDirectory "$SMPROGRAMS\${APP_NAME}"
+
+	;Create shortcuts
+	CreateShortCut "$DESKTOP\${APP_NAME}.lnk" "$INSTDIR\${APP_NAME}.exe"				; Create a shortcut on the desktop
+	CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk" "$INSTDIR\${APP_NAME}.exe"	; Create a shortcut in Start Menu Programs
+	CreateShortCut "$SMPROGRAMS\${APP_NAME}\${APP_NAME} webpage.lnk" "$INSTDIR\${APP_NAME}Webpage.url"
+	
+	FileClose $0				;Close log file
 SectionEnd
 
 ; Uninstaller section
 Section "Uninstall"
 	SetShellVarContext current	;If set to 'current' (the default), the current user's shell folders are used. Note that, if used in installer code, this will only affect the installer, and if used in uninstaller code, this will only affect the uninstaller. To affect both, it needs to be used in both.
-	SetOutPath "$APPDATA"		;This trick enables deletion of all the files from installation folder.
+	SetOutPath "$LOCALAPPDATA"	;This trick enables deletion of all the files from installation folder.
 	RMDir /r	"$INSTDIR"		;remove directory along with its contents
 
     ; Remove uninstall information from the registry
     DeleteRegKey HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"
 
-    ; Remove desktop shortcut
-    Delete "$DESKTOP\${APP_NAME}.lnk"
+    ; Remove shortcuts
+    Delete 	"$DESKTOP\${APP_NAME}.lnk"
+    Delete 	"$SMPROGRAMS\${APP_NAME}\${APP_NAME}.lnk"
+    Delete	"$SMPROGRAMS\${APP_NAME}\${APP_NAME}Webpage.lnk"
+    RMDir		"$SMPROGRAMS\${APP_NAME}"
 SectionEnd
-
-; Define the silent installation parameter
-Function .onInit
-    ClearErrors
-    ${GetParameters} $R0		;Get command line parameters.
-
-	${If} $R0 == "/w" 
-		MessageBox MB_OK "small /w"
-		Quit
-	${ElseIf}	$R0 == "/W" 
-		MessageBox MB_OK "capital /W"
-		Quit
-    	${EndIf}
-
-; 	${If} $R0 == "/S"
-; 		MessageBox MB_OK "Capital S"
-;     	${EndIf}
-
-;     ${If} $R0 == "/s"
-; 		MessageBox MB_OK "ordinary s"
-; 		; MessageBox MB_OK "${SILENT_PARAMETER}"
-;         	; Call SilentInstall
-;         	; Quit ; Quit the installer after silent installation
-;     ${EndIf}
-FunctionEnd
