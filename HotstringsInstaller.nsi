@@ -1,14 +1,19 @@
 !include "FileFunc.nsh"				;for function GetTime
 !include "LogicLib.nsh"
-!include "MUI2.nsh"					;for graphical installer
+; !include "MUI2.nsh"				;for graphical installer
 
-; Script Header
-Outfile "HotstringsInstaller.exe"		;Name of the installer file
-RequestExecutionLevel user 			; Install only for the current user
 
 !define APP_NAME "Hotstrings"
 !define APP_VERSION "1.0"
 !define SILENT_PARAMETER "/s"
+
+; Script Header
+SetCompressor /SOLID Lzma					;LZMA is a new compression method that gives very good compression ratios. If /SOLID is used, all of the installer data is compressed in one block. This results in greater compression ratios.
+BrandingText ""							;Sets the text that is shown at the bottom of the install window at the bottom of the install window. Setting this to an empty string ("") uses the default (by default it is 'Nullsoft Install System vX.XX'); 
+Caption 	"${APP_NAME} application installation"	;Sets the text for the titlebar of the installer.
+Name		"${APP_NAME}"						;Sets the name displayed in installer GUI.
+Outfile 	"${APP_NAME}Installer.exe"			;Name of the .exe  installer file
+RequestExecutionLevel user 					; Install only for the current user
 
 !macro LogMessage Message
     ${GetTime} "" "L" $1 $2 $3 $4 $5 $6 $7
@@ -37,7 +42,7 @@ Function SilentInstall
     
     CreateDirectory "$INSTDIR"				; Create Libraries and Log folders
     SetOutPath "$INSTDIR" ; Set the installation directory to the user's Roaming AppData
-    ; Copy files to the installation directory
+    		; Copy files to the installation directory
 		File "Hotstrings.exe"
 		!insertmacro LogMessage "  - Created: $INSTDIR\Hotstrings.exe"
 		File "Config.ini"
@@ -47,16 +52,16 @@ Function SilentInstall
 
 	CreateDirectory "$INSTDIR\Libraries"		; Create Libraries folder
 	SetOutPath "$INSTDIR\Libraries" ; Set the installation directory to the user's Roaming AppData
-	; Copy files to the installation directory
+		; Copy files to the installation directory
 		File ".\Libraries\*.csv"	;relative path, subfolder: "."
 
 	CreateDirectory "$INSTDIR\Log"		; Create Log folder
 	SetOutPath "$INSTDIR\Log" ; Set the installation directory to the user's Roaming AppData
-    ; Copy files to the installation directory
+    		; Copy files to the installation directory
 
     CreateDirectory "$INSTDIR\Languages"		; Create Languages folder
     SetOutPath "$INSTDIR\Languages" ; Set the installation directory to the user's Roaming AppData
-        ; Copy files to the installation directory
+        	; Copy files to the installation directory
     File ".\Languages\English.txt"
 
     ; Add uninstall information to the registry
@@ -74,7 +79,6 @@ Section
 	SetShellVarContext current	;If set to 'current' (the default), the current user's shell folders are used. Note that, if used in installer code, this will only affect the installer, and if used in uninstaller code, this will only affect the uninstaller. To affect both, it needs to be used in both.
 	StrCpy $INSTDIR "C:\Users\macie\Documents\temp2\"
 	; StrCpy $INSTDIR "$LOCALAPPDATA\${APP_NAME}"
-
 
 	; Write uninstaller
 	WriteUninstaller "$INSTDIR\HotstringsUninstaller.exe"
