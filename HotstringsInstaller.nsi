@@ -1,9 +1,23 @@
+﻿; 
+; 	Author:      	Maciej Słojewski (mslonik, http://mslonik.pl)
+; 	Purpose:     	Simple NSIS installer of Hotstrings application.
+; 	Description: 	---
+; 	License:     	MIT License
+;	Year:		2023
+;
+;	To do: 		- extended logging (in general),
+;				- logging of registry entries,
+;				- GUI installer,
+;				- choice of AppData folder,
+;				- choice of UserData folder,
+;				- option to change AppData and UserData after installation
+;
 !include "FileFunc.nsh"				;for function GetTime and GetParameters
 !include "LogicLib.nsh"				;The LogicLib provides some very simple macros that allow easy construction of complex logical structures. 
 ; !include "MUI2.nsh"				;for graphical installer
 
 !define APP_NAME 		"Hotstrings"
-!define APP_VERSION 	"1.0"
+!define APP_VERSION 	"1.0.1"
 !define COMPANY_NAME 	"Damian Damaszke Dam IT"			;for VIAddVersionKey
 !define COPYRIGHT 		"Maciej Slojewski & DamIT"		;for VIAddVersionKey
 !define DESCRIPTION 	"Installer of Hotstrings application: advanced text replacement tool."	;for VIAddVersionKey
@@ -101,6 +115,8 @@ Section
 
 	; Create a shortcut on the desktop. 0 comes from application "Icon Explorer". Comments for long commands in nsis are not allowed.
 	CreateShortCut "$DESKTOP\${APP_NAME}.lnk" \
+				"$INSTDIR\${APP_NAME}.exe" \
+				"" \
 				"$INSTDIR\${APP_NAME}.exe" \
 				0 \
 				SW_SHOWNORMAL \
