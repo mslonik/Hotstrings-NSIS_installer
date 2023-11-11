@@ -1,1 +1,9 @@
-HotstringsInstaller.nsi
+
+*.csv
+Config.ini
+Hotstrings.exe
+HotstringsInstaller.zip
+LICENSE_EULA.txt
+LICENSE_EULA.md
+Languages/English.txt
+HotstringsInstaller.exe
