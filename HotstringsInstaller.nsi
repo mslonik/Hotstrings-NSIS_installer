@@ -16,12 +16,30 @@
 !include "LogicLib.nsh"				;The LogicLib provides some very simple macros that allow easy construction of complex logical structures. 
 ; !include "MUI2.nsh"				;for graphical installer
 
+
+!define VERSION 		"3.6.19.0"	;for Registry input
+!define 	COMMERCIAL 				;or FREE
+; !define	FREE						;or COMMERCIAL
+
+!verbose push						;Passing push will cause !verbose to push the current verbosity level on a special stack.
+!ifdef COMMERCIAL					;conditional compilation
+	!define DISP_NAME 	"Hotstrings Premium"
+	!verbose 4					;only level=4 will show result in Visual Studio Code
+	!echo "COMMERCIAL installer of the application displayed under the name: ${DISP_NAME}$\nVersion: ${VERSION}$\n$\n"
+!endif
+
+!ifdef FREE						;conditional compilation
+	!define DISP_NAME 	"Hotstrings Free"
+	!verbose 4
+	!echo "FREE installer of the application displayed under the name: ${DISP_NAME}$\nVersion: ${VERSION}$\n$\n"
+!endif	
+!verbose pop						;Passing push will cause !verbose to push the current verbosity level on a special stack.
+
 !define APP_NAME 		"Hotstrings"
-!define APP_VERSION 	"1.0.1"
+!define INST_VERSION 	"1.0.2"						;Version of this installer script
 !define COMPANY_NAME 	"Damian Damaszke Dam IT"			;for VIAddVersionKey
-!define COPYRIGHT 		"Maciej Slojewski & DamIT"		;for VIAddVersionKey
+!define COPYRIGHT 		"Damian Damaszke Dam IT"			;for VIAddVersionKey
 !define DESCRIPTION 	"Installer of Hotstrings application: advanced text replacement tool."	;for VIAddVersionKey
-!define VERSION 		"3.6.19.0"													;for Registry input
 !define WEB_SITE 		"https://hotstrings.technology"									;for Registry input
 
 ; Script Header
@@ -36,12 +54,18 @@ SilentInstall			normal				;if this is set to 'normal' and the user runs the inst
 
 ;These can be viewed in the File Properties Version or Details tab.
 VIProductVersion "${VERSION}"
-VIAddVersionKey "ProductName"  	"${APP_NAME}"		;
+VIAddVersionKey "ProductName"  	"${APP_NAME}"
+; VIAddVersionKey "Comments"
 VIAddVersionKey "CompanyName"  	"${COMPANY_NAME}"
 VIAddVersionKey "LegalCopyright"  	"${COPYRIGHT}"
 VIAddVersionKey "FileDescription"  "${DESCRIPTION}"
 VIAddVersionKey "FileVersion"  	"${VERSION}"
-VIAddVersionKey "ProductVersion"  	"${VERSION}"
+VIAddVersionKey "ProductVersion"  	"${DISP_NAME}"
+; VIAddVersionKey "InternalName"
+; VIAddVersionKey "Legal Trademarks"
+; VIAddVersionKey "OriginalFilename"
+; VIAddVersionKey "PrivateBuild"
+; VIAddVersionKey "SpecialBuild"
 
 !macro LogMessage Message
     ${GetTime} "" "L" $1 $2 $3 $4 $5 $6 $7
@@ -75,7 +99,7 @@ Section
 	WriteUninstaller "$INSTDIR\${APP_NAME}Uninstaller.exe"
 	; Log file creation
 	FileOpen $0 "$INSTDIR\HotstringsInstaller.log" a		;"a" = append, meaning opened for both read and write
-    	!insertmacro LogMessage "Hotstrings Installer Version: ${APP_VERSION}"
+    	!insertmacro LogMessage "Hotstrings Installer Version: ${INST_VERSION}"
     	!insertmacro LogMessage "Installation started."
     	!insertmacro LogMessage "Files created during installation:"
 	
@@ -103,11 +127,11 @@ Section
 	File ".\Languages\English.txt"	
 	
 	; Add uninstall information to the registry
-	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayName" "${APP_NAME}"
-	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "UninstallString" "$INSTDIR\${APP_NAME}Uninstaller.exe"
-	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayVersion" "${VERSION}"
-	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "Publisher" "${COMPANY_NAME}"
-	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "URLInfoAbout" "${WEB_SITE}"
+	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayName" 	"${DISP_NAME}"
+	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "UninstallString" 	"$INSTDIR\${APP_NAME}Uninstaller.exe"
+	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayVersion" 	"${VERSION}"
+	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "Publisher" 		"${COMPANY_NAME}"
+	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "URLInfoAbout" 	"${WEB_SITE}"
 	WriteRegDWORD 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "NoModify" 1
 	WriteRegDWORD 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "NoRepair" 1	
 	
