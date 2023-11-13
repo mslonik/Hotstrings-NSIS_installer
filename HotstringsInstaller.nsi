@@ -18,24 +18,24 @@
 
 
 !define VERSION 		"3.6.19.0"	;for Registry input
-!define 	COMMERCIAL 				;or FREE
+!define AUXILIARY		"Hotstrings"
+!define COMMERCIAL	 				;or FREE
 ; !define	FREE						;or COMMERCIAL
 
 !verbose push						;Passing push will cause !verbose to push the current verbosity level on a special stack.
 !ifdef COMMERCIAL					;conditional compilation
-	!define DISP_NAME 	"Hotstrings Premium"
+	!define APP_NAME 	"HotstringsPro"
 	!verbose 4					;only level=4 will show result in Visual Studio Code
-	!echo "COMMERCIAL installer of the application displayed under the name: ${DISP_NAME}$\nVersion: ${VERSION}$\n$\n"
+	!echo "COMMERCIAL installer of the application displayed under the name: ${APP_NAME}$\nVersion: ${VERSION}$\n$\n"
 !endif
 
 !ifdef FREE						;conditional compilation
-	!define DISP_NAME 	"Hotstrings Free"
+	!define APP_NAME 	"Hotstrings"
 	!verbose 4
-	!echo "FREE installer of the application displayed under the name: ${DISP_NAME}$\nVersion: ${VERSION}$\n$\n"
+	!echo "FREE installer of the application displayed under the name: ${APP_NAME}$\nVersion: ${VERSION}$\n$\n"
 !endif	
 !verbose pop						;Passing push will cause !verbose to push the current verbosity level on a special stack.
 
-!define APP_NAME 		"Hotstrings"
 !define INST_VERSION 	"1.0.2"						;Version of this installer script
 !define COMPANY_NAME 	"Damian Damaszke Dam IT"			;for VIAddVersionKey
 !define COPYRIGHT 		"Damian Damaszke Dam IT"			;for VIAddVersionKey
@@ -48,7 +48,7 @@ BrandingText ""							;Sets the text that is shown at the bottom of the install 
 Caption 	"${APP_NAME} application installation"	;Sets the text for the titlebar of the installer.
 CRCCheck 	on								;Specifies whether or not the installer will perform a CRC on itself before allowing an install.
 Name		"${APP_NAME}"						;Sets the name displayed in installer GUI.
-Outfile 	"${APP_NAME}Installer.exe"			;Name of the .exe  installer file
+Outfile 	"${AUXILIARY}Installer.exe"			;Name of the .exe  installer file
 RequestExecutionLevel 	user					; Install only for the current user
 SilentInstall			normal				;if this is set to 'normal' and the user runs the installer with /S (case sensitive) on the command line, it will behave as if SilentInstall 'silent' was used.
 
@@ -60,7 +60,7 @@ VIAddVersionKey "CompanyName"  	"${COMPANY_NAME}"
 VIAddVersionKey "LegalCopyright"  	"${COPYRIGHT}"
 VIAddVersionKey "FileDescription"  "${DESCRIPTION}"
 VIAddVersionKey "FileVersion"  	"${VERSION}"
-VIAddVersionKey "ProductVersion"  	"${DISP_NAME}"
+VIAddVersionKey "ProductVersion"  	"${APP_NAME}"
 ; VIAddVersionKey "InternalName"
 ; VIAddVersionKey "Legal Trademarks"
 ; VIAddVersionKey "OriginalFilename"
@@ -95,8 +95,6 @@ Section
 	StrCpy $INSTDIR "$LOCALAPPDATA\${APP_NAME}"	;for testing purposes only: StrCpy $INSTDIR "C:\Users\macie\Documents\temp2\"
 	; LogSet on					;Sets whether install logging to $INSTDIR\install.log will happen. Not available in my version. Future.
 
-	; Write uninstaller
-	WriteUninstaller "$INSTDIR\${APP_NAME}Uninstaller.exe"
 	; Log file creation
 	FileOpen $0 "$INSTDIR\HotstringsInstaller.log" a		;"a" = append, meaning opened for both read and write
     	!insertmacro LogMessage "Hotstrings Installer Version: ${INST_VERSION}"
@@ -112,8 +110,8 @@ Section
 		!insertmacro LogMessage "  - Created: $INSTDIR\Config.ini"
 		File "LICENSE_EULA.md"
 		!insertmacro LogMessage "  - Created: $INSTDIR\LICENSE_EULA.md"
-		File "${APP_NAME}Webpage.url" 
-		!insertmacro LogMessage "  - Created: $INSTDIR\${APP_NAME}Webpage.url"
+		File "${AUXILIARY}Webpage.url" 
+		!insertmacro LogMessage "  - Created: $INSTDIR\${AUXILIARY}Webpage.url"
 	CreateDirectory "$INSTDIR\Libraries"		; Create Libraries folder
 	SetOutPath "$INSTDIR\Libraries" ; Set the installation directory to the user's LOCALAPPDATA
 		; Copy files to the installation directory
@@ -127,8 +125,8 @@ Section
 	File ".\Languages\English.txt"	
 	
 	; Add uninstall information to the registry
-	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayName" 	"${DISP_NAME}"
-	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "UninstallString" 	"$INSTDIR\${APP_NAME}Uninstaller.exe"
+	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayName" 	"${APP_NAME}"
+	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "UninstallString" 	"$INSTDIR\${AUXILIARY}Uninstaller.exe"
 	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "DisplayVersion" 	"${VERSION}"
 	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "Publisher" 		"${COMPANY_NAME}"
 	WriteRegStr 	HKCU "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}" "URLInfoAbout" 	"${WEB_SITE}"
@@ -166,6 +164,8 @@ Section
 				"${APP_NAME} webpage"
 	
 	FileClose $0				;Close log file
+	; Write uninstaller
+	WriteUninstaller "$INSTDIR\${AUXILIARY}Uninstaller.exe"		;This must be the last line in default section.
 SectionEnd
 
 ; Uninstaller section
