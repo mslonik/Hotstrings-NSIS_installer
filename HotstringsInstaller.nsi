@@ -110,8 +110,14 @@ Section
 		!insertmacro LogMessage "  - Created: $INSTDIR\${APPNAME}.exe"
 		File "Config.ini"
 		!insertmacro LogMessage "  - Created: $INSTDIR\Config.ini"
+		!ifdef COMMERCIAL
 		File "LICENSE_EULA.md"
 		!insertmacro LogMessage "  - Created: $INSTDIR\LICENSE_EULA.md"
+		!endif
+		!ifdef FREE
+		File LICENSE_MIT 
+		!insertmacro LogMessage "  - Created: $INSTDIR\LICENSE_MIT"	
+		!endif
 		File "${AUXILIARY}Webpage.url" 
 		!insertmacro LogMessage "  - Created: $INSTDIR\${AUXILIARY}Webpage.url"
 	CreateDirectory "$INSTDIR\Libraries"		; Create Libraries folder
@@ -120,7 +126,7 @@ Section
 		File ".\Libraries\*.csv"	;relative path, subfolder: "."	
 	CreateDirectory "$INSTDIR\Log"		; Create Log folder
 	SetOutPath "$INSTDIR\Log" ; Set the installation directory to the user's LOCALAPPDATA
-			; Copy files to the installation directory	
+		; Copy files to the installation directory	
 	CreateDirectory "$INSTDIR\Languages"		; Create Languages folder
 	SetOutPath "$INSTDIR\Languages" ; Set the installation directory to the user's LOCALAPPDATA
 	    	; Copy files to the installation directory
