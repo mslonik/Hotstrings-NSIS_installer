@@ -58,7 +58,7 @@ SilentInstall			normal				;if this is set to 'normal' and the user runs the inst
 ;These can be viewed in the File Properties Version or Details tab.
 VIProductVersion "${VERSION}.0"
 VIAddVersionKey "ProductName"  	"${APPNAME}"
-; VIAddVersionKey "Comments"
+VIAddVersionKey "Comments"		"Advanced, configurable text replacement tool aka autotext"
 VIAddVersionKey "CompanyName"  	"${COMPANY_NAME}"
 VIAddVersionKey "LegalCopyright"  	"${COPYRIGHT}"
 VIAddVersionKey "FileDescription"  "${DESCRIPTION}"
